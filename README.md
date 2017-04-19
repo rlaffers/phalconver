@@ -57,7 +57,7 @@ cd /usr/lib/php/20131226/
 sudo ln -s phalcon.1.3.6.so phalcon.so
 ```
 
-You need to repeat this step for every PHP extension directory in which Phalcon is installed
+You need to repeat this step for every PHP extension directory in which Phalcon is installed.
 
 Finally, configure your PHP to load Phalcon.
 
@@ -101,7 +101,7 @@ phalconver list
 
 ### use
 
-Switches to the given PHP version. Has option to switch the CLI or Apache version only. Additionally, it has an option for switching currently active Phalcon version.
+Switches to the given PHP version. Has an option to switch the CLI or Apache version only. Additionally, it has an option for switching the currently active Phalcon version.
 
 ```bash
 sudo phalconver use php7.0
