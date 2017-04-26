@@ -230,7 +230,7 @@ get_current_apache_phalcon_version() {
         error "Failed to detect Phalcon version because of missing symbolic link $php_api_dir/phalcon.so"
         exit 1
     fi
-    local current_apache_phalcon_version=`readlink $php_api_dir/phalcon.so|sed -n 's/.*\/phalcon\.\(.*\)\.so/\1/p'`
+    local current_apache_phalcon_version=`readlink $php_api_dir/phalcon.so|sed -n 's/phalcon\.\(.*\)\.so/\1/p'`
     echo $current_apache_phalcon_version
 
 }
