@@ -59,14 +59,14 @@ switch_php() {
     if [[ "$CLI_ONLY" != 1 ]]; then
         local apache_versions=$(get_apache_php_versions)
         if [[ "$apache_versions" != *"php$target_version"* ]]; then
-            error "Version $target_version is not available pre Apache"
+            error "Version $target_version is not available for Apache"
             exit 1
         fi
     fi
     if [[ "$APACHE_ONLY" != 1 ]]; then
         local cli_versions=$(get_cli_php_versions)
         if [[ "$cli_versions" != *"php$target_version"* ]]; then
-            error "Version $target_version is not available pre CLI"
+            error "Version $target_version is not available for CLI"
             exit 1
         fi
     fi
@@ -172,11 +172,12 @@ print_status() {
 
 # Detects current PHP version for CLI
 get_current_cli_version() {
-    local cli_php_version=`php -v|grep cli|sed -n 's/PHP\s\([0-9]\.[0-9]\).*/\1/p'`
+    local cli_php_version=`php -v|grep cli|sed -n 's/PHP\s\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'`
     echo $cli_php_version
 }
 
 # Detects current PHP version for Apache
+# TODO better version detection - need full version number. Use <?php phpinfo(); script in /var/www
 get_current_apache_version() {
     local apache_php_version=`a2query -m|sed -n 's/^php\([0-9].[0-9]\).*/\1/p'`
     echo $apache_php_version
@@ -237,8 +238,20 @@ get_current_apache_phalcon_version() {
 
 # Returns PHP versions available for CLI
 get_cli_php_versions() {
-    local cli_php_versions=`find $PHP_BIN_DIR -name "php[0-9]*" -printf "%f\n"`
-    echo -e $cli_php_versions
+    #local cli_php_versions=`find $PHP_BIN_DIR -name "php[0-9]*" -printf "%f\n"`
+    #echo -e $cli_php_versions
+    #local file_list=()
+    #while IFS= read -d $'\0' -r file ; do
+        ##
+    #done < <(find $PHP_BIN_DIR -name "php[0-9]*" -print0)
+    local cli_php_versions=()
+    readarray cli_php_versions < <(find $PHP_BIN_DIR -name "php[0-9]*")
+    local version=""
+    for bin in "${cli_php_versions[@]}"
+    do
+        version=`$bin -v|grep cli|sed -n 's/PHP\s\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'`
+        echo -e "    php$version"
+    done
 }
 
 # Returns PHP versions available for Apache
@@ -251,7 +264,7 @@ get_apache_php_versions() {
 print_list() {
     # Available PHP CLI versions
     echo -e "PHP versions available on your system:\n\nCLI"
-    echo -e "    $(get_cli_php_versions)\n"
+    echo -e "$(get_cli_php_versions)\n"
 
     # Available PHP versions for Apache
     echo -e "Apache:"
